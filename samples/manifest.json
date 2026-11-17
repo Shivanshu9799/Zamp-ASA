@@ -1,0 +1,122 @@
+{
+  "samples": [
+    {
+      "file": "01_happy_sgi_0418.pdf",
+      "label": "Happy path",
+      "group": "Core",
+      "title": "Goods invoice, 3-way match",
+      "expected": "APPROVE",
+      "order": 1,
+      "blurb": "Goods invoice that matches the PO, the goods receipt and the vendor master.",
+      "scanned": false,
+      "total": "71980.00",
+      "vendor": "Shree Ganesh Industrial Supplies Pvt. Ltd.",
+      "invoice_number": "INV-SGI-0418"
+    },
+    {
+      "file": "02_happy_nimbus_0091.pdf",
+      "label": "Happy path (service)",
+      "group": "Core",
+      "title": "Service invoice, inter-state IGST",
+      "expected": "APPROVE",
+      "order": 2,
+      "blurb": "Different layout, services (2-way match), inter-state so IGST only.",
+      "scanned": false,
+      "total": "100300.00",
+      "vendor": "Nimbus Cloud Services LLP",
+      "invoice_number": "NCS/26-27/0091"
+    },
+    {
+      "file": "03a_split_apex_1101.pdf",
+      "label": "Split PO 1/3",
+      "group": "Edge 1",
+      "title": "One PO, three invoices",
+      "expected": "APPROVE",
+      "order": 3,
+      "blurb": "First of three invoices against PO-2026-1002 (48 of 120 units).",
+      "scanned": false,
+      "total": "28320.00",
+      "vendor": "Apex Electricals & Controls Pvt. Ltd.",
+      "invoice_number": "APX-1101"
+    },
+    {
+      "file": "03b_split_apex_1102.pdf",
+      "label": "Split PO 2/3",
+      "group": "Edge 1",
+      "title": "One PO, three invoices",
+      "expected": "APPROVE",
+      "order": 4,
+      "blurb": "Second invoice (42 more units).",
+      "scanned": false,
+      "total": "24780.00",
+      "vendor": "Apex Electricals & Controls Pvt. Ltd.",
+      "invoice_number": "APX-1102"
+    },
+    {
+      "file": "03c_split_apex_1103.pdf",
+      "label": "Split PO 3/3",
+      "group": "Edge 1",
+      "title": "Over-billed by 3 units",
+      "expected": "PENDING",
+      "order": 5,
+      "blurb": "Third invoice bills 33 units but only 30 remain \u2192 over by 3 units / Rs 1,500.",
+      "scanned": false,
+      "total": "19470.00",
+      "vendor": "Apex Electricals & Controls Pvt. Ltd.",
+      "invoice_number": "APX-1103"
+    },
+    {
+      "file": "04_implied_po_kaveri_2231.pdf",
+      "label": "No PO number",
+      "group": "Edge 2",
+      "title": "PO only implied in free text",
+      "expected": "PENDING",
+      "order": 6,
+      "blurb": "No PO field. The agent infers PO-2026-1003 and asks a human to confirm.",
+      "scanned": false,
+      "total": "42480.00",
+      "vendor": "Kaveri Packaging Solutions",
+      "invoice_number": "KPS-2231"
+    },
+    {
+      "file": "05_dup_sgi_0418_scan.pdf",
+      "label": "Scanned duplicate",
+      "group": "Edge 3",
+      "title": "Same invoice, re-sent as a scan",
+      "expected": "REJECT",
+      "order": 7,
+      "blurb": "Image-only scan of invoice 01 with a re-typed number and a later date.",
+      "scanned": true,
+      "total": "71980.00",
+      "vendor": "Shree Ganesh Industrial Supplies Pvt. Ltd.",
+      "invoice_number": "INVSGI418"
+    },
+    {
+      "file": "06_bankchange_orbit_7782.pdf",
+      "label": "Bank change",
+      "group": "Edge 4",
+      "title": "Bank details changed",
+      "expected": "PENDING",
+      "order": 8,
+      "blurb": "Everything matches except the bank account: security hold.",
+      "scanned": false,
+      "total": "29400.00",
+      "vendor": "Orbit Logistics",
+      "invoice_number": "ORB-7782"
+    }
+  ],
+  "historical": [
+    {
+      "file": "historical/h1_sgi_0392.pdf",
+      "days_ago": 6
+    },
+    {
+      "file": "historical/h2_nimbus_0063.pdf",
+      "days_ago": 4
+    },
+    {
+      "file": "historical/h3_apex_1088.pdf",
+      "days_ago": 2
+    }
+  ]
+}

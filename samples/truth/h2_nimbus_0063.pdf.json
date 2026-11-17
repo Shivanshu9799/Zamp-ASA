@@ -1,0 +1,56 @@
+{
+  "vendor_name": "Nimbus Cloud Services LLP",
+  "vendor_gstin": "29AAKFN5678K1Z2",
+  "vendor_address": "4th Floor, Prestige Tech Park, ORR, Bengaluru - 560103, Karnataka",
+  "vendor_bank": {
+    "bank_name": "Axis Bank",
+    "account_number": "918020045671234",
+    "ifsc": "UTIB0000456"
+  },
+  "bill_to_name": "Meridian Foods Pvt. Ltd.",
+  "invoice_number": "NCS/26-27/0063",
+  "invoice_date": "2026-09-30",
+  "due_date": "2026-10-30",
+  "payment_terms": "Net 30",
+  "po_number": "PO-2026-0911",
+  "po_reference_text": null,
+  "currency": "INR",
+  "line_items": [
+    {
+      "description": "Managed cloud hosting - Sep 2026",
+      "sku": null,
+      "hsn": "998315",
+      "quantity": "1",
+      "uom": "MONTH",
+      "unit_price": "78500.00",
+      "amount": "78500.00",
+      "tax_rate": "18"
+    }
+  ],
+  "subtotal": "78500.00",
+  "tax_lines": [
+    {
+      "type": "IGST",
+      "rate": "18",
+      "amount": "14130.00"
+    }
+  ],
+  "tax_total": "14130.00",
+  "other_charges": "0.00",
+  "total": "92630.00",
+  "prices_tax_inclusive": false,
+  "field_confidence": {
+    "vendor_name": 0.99,
+    "vendor_gstin": 0.99,
+    "invoice_number": 0.99,
+    "invoice_date": 0.99,
+    "due_date": 0.99,
+    "po_number": 0.99,
+    "subtotal": 0.99,
+    "tax_total": 0.99,
+    "total": 0.99,
+    "line_items": 0.99,
+    "vendor_bank": 0.99
+  },
+  "notes": null
+}

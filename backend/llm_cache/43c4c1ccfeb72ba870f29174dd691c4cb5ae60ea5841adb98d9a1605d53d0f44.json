@@ -1,0 +1,73 @@
+{
+  "sha256": "43c4c1ccfeb72ba870f29174dd691c4cb5ae60ea5841adb98d9a1605d53d0f44",
+  "source": "llm",
+  "model": "gemini-3.5-flash-lite",
+  "file": "h2_nimbus_0063.pdf",
+  "created_at": "2026-11-16T20:29:13.808758Z",
+  "extraction": {
+    "vendor_name": "Nimbus Cloud Services LLP",
+    "vendor_gstin": "29AAKFN5678K1Z2",
+    "vendor_address": "4th Floor, Prestige Tech Park, ORR\nBengaluru - 560103, Karnataka",
+    "vendor_bank": {
+      "bank_name": "Axis Bank",
+      "account_number": "918020045671234",
+      "ifsc": "UTIB0000456"
+    },
+    "bill_to_name": "Meridian Foods Pvt. Ltd.",
+    "invoice_number": "NCS/26-27/0063",
+    "invoice_date": "2026-09-30",
+    "due_date": "2026-10-30",
+    "payment_terms": "Net 30",
+    "po_number": "PO-2026-0911",
+    "po_reference_text": null,
+    "currency": "INR",
+    "line_items": [
+      {
+        "description": "Managed cloud hosting - Sep 2026\nService period: 01-Sep-2026 to 30-Sep-2026",
+        "sku": null,
+        "hsn": "998315",
+        "quantity": "1",
+        "uom": null,
+        "unit_price": "78,500.00",
+        "amount": "78,500.00",
+        "tax_rate": "18"
+      }
+    ],
+    "subtotal": "78,500.00",
+    "tax_lines": [
+      {
+        "type": "IGST",
+        "rate": "18",
+        "amount": "14,130.00"
+      }
+    ],
+    "tax_total": "14,130.00",
+    "other_charges": null,
+    "total": "92,630.00",
+    "prices_tax_inclusive": false,
+    "field_confidence": {
+      "vendor_name": 1.0,
+      "vendor_gstin": 1.0,
+      "vendor_address": 1.0,
+      "vendor_bank": 1.0,
+      "bill_to_name": 1.0,
+      "invoice_number": 1.0,
+      "invoice_date": 1.0,
+      "due_date": 1.0,
+      "payment_terms": 1.0,
+      "po_number": 1.0,
+      "po_reference_text": 1.0,
+      "currency": 1.0,
+      "line_items": 1.0,
+      "subtotal": 1.0,
+      "tax_lines": 1.0,
+      "tax_total": 1.0,
+      "other_charges": 1.0,
+      "total": 1.0,
+      "prices_tax_inclusive": 1.0,
+      "field_confidence": 1.0,
+      "notes": 1.0
+    },
+    "notes": null
+  }
+}

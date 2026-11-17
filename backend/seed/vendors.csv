@@ -1,0 +1,6 @@
+id,name,aliases,gstin,bank_name,account_number,ifsc,state_code,phone_on_file,email
+V001,Shree Ganesh Industrial Supplies Pvt. Ltd.,Shree Ganesh Industrial;SGIS,27AABCS1234F1Z5,HDFC Bank,50100234564521,HDFC0000123,27,+91 22 4010 2200,accounts@shreeganesh-industrial.example
+V002,Nimbus Cloud Services LLP,Nimbus Cloud,29AAKFN5678K1Z2,Axis Bank,918020045671234,UTIB0000456,29,+91 80 4120 7700,billing@nimbuscloud.example
+V003,Kaveri Packaging Solutions,Kaveri Packaging,27AAEFK9012M1Z8,SBI,39876543210,SBIN0001234,27,+91 20 2744 1180,accounts@kaveripack.example
+V004,Apex Electricals & Controls Pvt. Ltd.,Apex Electricals;Apex E&C,27AAGCA3456P1Z1,ICICI Bank,123405006789,ICIC0000789,27,+91 22 2860 5544,billing@apex-electricals.example
+V005,Orbit Logistics,Orbit Logistics Pvt Ltd,27AAJFO7890Q1Z4,HDFC Bank,50200987653307,HDFC0000321,27,+91 22 6677 3300,billing@orbitlogistics.example

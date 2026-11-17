@@ -1,0 +1,77 @@
+{
+  "sha256": "969558925c59f1748f7f59d6b0cc6b88ad0db61fd3bb4cee11611d6af1668946",
+  "source": "llm",
+  "model": "gemini-3.5-flash-lite",
+  "file": "06_bankchange_orbit_7782.pdf",
+  "created_at": "2026-11-16T20:28:48.310388Z",
+  "extraction": {
+    "vendor_name": "ORBIT LOGISTICS",
+    "vendor_gstin": "27AAJFO7890Q1Z4",
+    "vendor_address": "Godown 5, JNPT Road, Panvel | Navi Mumbai - 410206, Maharashtra",
+    "vendor_bank": {
+      "bank_name": "Kotak Mahindra Bank",
+      "account_number": "7712009910",
+      "ifsc": "KKBK0000555"
+    },
+    "bill_to_name": "Meridian Foods Pvt. Ltd.",
+    "invoice_number": "ORB-7782",
+    "invoice_date": "2026-11-05",
+    "due_date": null,
+    "payment_terms": "15 days",
+    "po_number": "PO-2026-1005",
+    "po_reference_text": null,
+    "currency": "INR",
+    "line_items": [
+      {
+        "description": "FTL freight Mumbai to Pune (32 ft)",
+        "sku": null,
+        "hsn": "996511",
+        "quantity": "1",
+        "uom": null,
+        "unit_price": "28,000.00",
+        "amount": "28,000.00",
+        "tax_rate": null
+      }
+    ],
+    "subtotal": "28,000.00",
+    "tax_lines": [
+      {
+        "type": "CGST",
+        "rate": "2.5",
+        "amount": "700.00"
+      },
+      {
+        "type": "SGST",
+        "rate": "2.5",
+        "amount": "700.00"
+      }
+    ],
+    "tax_total": "1,400.00",
+    "other_charges": null,
+    "total": "29,400.00",
+    "prices_tax_inclusive": false,
+    "field_confidence": {
+      "vendor_name": 1.0,
+      "vendor_gstin": 1.0,
+      "vendor_address": 1.0,
+      "vendor_bank": 1.0,
+      "bill_to_name": 1.0,
+      "invoice_number": 1.0,
+      "invoice_date": 1.0,
+      "due_date": 1.0,
+      "payment_terms": 1.0,
+      "po_number": 1.0,
+      "po_reference_text": 1.0,
+      "currency": 1.0,
+      "line_items": 1.0,
+      "subtotal": 1.0,
+      "tax_lines": 1.0,
+      "tax_total": 1.0,
+      "other_charges": 1.0,
+      "total": 1.0,
+      "prices_tax_inclusive": 1.0,
+      "notes": 1.0
+    },
+    "notes": "Please note our new bank details"
+  }
+}

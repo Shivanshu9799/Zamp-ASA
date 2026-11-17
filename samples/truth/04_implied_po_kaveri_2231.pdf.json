@@ -1,0 +1,61 @@
+{
+  "vendor_name": "Kaveri Packaging Solutions",
+  "vendor_gstin": "27AAEFK9012M1Z8",
+  "vendor_address": "Plot 33, Taloja Industrial Area, Navi Mumbai - 410208, Maharashtra",
+  "vendor_bank": {
+    "bank_name": "SBI",
+    "account_number": "39876543210",
+    "ifsc": "SBIN0001234"
+  },
+  "bill_to_name": "Meridian Foods Pvt. Ltd.",
+  "invoice_number": "KPS-2231",
+  "invoice_date": "2026-10-10",
+  "due_date": "2026-11-09",
+  "payment_terms": "Net 30 days",
+  "po_number": null,
+  "po_reference_text": "Supplied against your order dated 02-Oct-2026",
+  "currency": "INR",
+  "line_items": [
+    {
+      "description": "5-Ply Corrugated Box 18x12x12 in",
+      "sku": null,
+      "hsn": "4819",
+      "quantity": "2000",
+      "uom": "NOS",
+      "unit_price": "18.00",
+      "amount": "36000.00",
+      "tax_rate": "18"
+    }
+  ],
+  "subtotal": "36000.00",
+  "tax_lines": [
+    {
+      "type": "CGST",
+      "rate": "9",
+      "amount": "3240.00"
+    },
+    {
+      "type": "SGST",
+      "rate": "9",
+      "amount": "3240.00"
+    }
+  ],
+  "tax_total": "6480.00",
+  "other_charges": "0.00",
+  "total": "42480.00",
+  "prices_tax_inclusive": false,
+  "field_confidence": {
+    "vendor_name": 0.99,
+    "vendor_gstin": 0.99,
+    "invoice_number": 0.99,
+    "invoice_date": 0.99,
+    "due_date": 0.99,
+    "po_number": 0.99,
+    "subtotal": 0.99,
+    "tax_total": 0.99,
+    "total": 0.99,
+    "line_items": 0.99,
+    "vendor_bank": 0.99
+  },
+  "notes": null
+}

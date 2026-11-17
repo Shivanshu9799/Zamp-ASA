@@ -1,0 +1,61 @@
+{
+  "vendor_name": "Apex Electricals & Controls Pvt. Ltd.",
+  "vendor_gstin": "27AAGCA3456P1Z1",
+  "vendor_address": "Unit 7, Andheri Industrial Estate, Veera Desai Road, Mumbai - 400053",
+  "vendor_bank": {
+    "bank_name": "ICICI Bank",
+    "account_number": "123405006789",
+    "ifsc": "ICIC0000789"
+  },
+  "bill_to_name": "Meridian Foods Pvt. Ltd.",
+  "invoice_number": "APX-1088",
+  "invoice_date": "2026-09-27",
+  "due_date": "2026-10-27",
+  "payment_terms": "Net 30 days",
+  "po_number": "PO-2026-0918",
+  "po_reference_text": null,
+  "currency": "INR",
+  "line_items": [
+    {
+      "description": "Contactor 3-pole 40A",
+      "sku": null,
+      "hsn": "8536",
+      "quantity": "30",
+      "uom": "NOS",
+      "unit_price": "1357.00",
+      "amount": "40710.00",
+      "tax_rate": "18"
+    }
+  ],
+  "subtotal": "34500.00",
+  "tax_lines": [
+    {
+      "type": "CGST",
+      "rate": "9",
+      "amount": "3105.00"
+    },
+    {
+      "type": "SGST",
+      "rate": "9",
+      "amount": "3105.00"
+    }
+  ],
+  "tax_total": "6210.00",
+  "other_charges": "0.00",
+  "total": "40710.00",
+  "prices_tax_inclusive": true,
+  "field_confidence": {
+    "vendor_name": 0.99,
+    "vendor_gstin": 0.99,
+    "invoice_number": 0.99,
+    "invoice_date": 0.99,
+    "due_date": 0.99,
+    "po_number": 0.99,
+    "subtotal": 0.99,
+    "tax_total": 0.99,
+    "total": 0.99,
+    "line_items": 0.99,
+    "vendor_bank": 0.99
+  },
+  "notes": null
+}

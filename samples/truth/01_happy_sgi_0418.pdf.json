@@ -1,0 +1,71 @@
+{
+  "vendor_name": "Shree Ganesh Industrial Supplies Pvt. Ltd.",
+  "vendor_gstin": "27AABCS1234F1Z5",
+  "vendor_address": "Gat No. 212, Bhosari MIDC, Pune - 411026, Maharashtra",
+  "vendor_bank": {
+    "bank_name": "HDFC Bank",
+    "account_number": "50100234564521",
+    "ifsc": "HDFC0000123"
+  },
+  "bill_to_name": "Meridian Foods Pvt. Ltd.",
+  "invoice_number": "INV-SGI-0418",
+  "invoice_date": "2026-10-14",
+  "due_date": "2026-11-13",
+  "payment_terms": "Net 30 days",
+  "po_number": "PO-2026-1001",
+  "po_reference_text": null,
+  "currency": "INR",
+  "line_items": [
+    {
+      "description": "Ball bearing 6205-2RS",
+      "sku": null,
+      "hsn": "8482",
+      "quantity": "100",
+      "uom": "NOS",
+      "unit_price": "450.00",
+      "amount": "45000.00",
+      "tax_rate": "18"
+    },
+    {
+      "description": "V-belt B-52",
+      "sku": null,
+      "hsn": "4010",
+      "quantity": "50",
+      "uom": "NOS",
+      "unit_price": "320.00",
+      "amount": "16000.00",
+      "tax_rate": "18"
+    }
+  ],
+  "subtotal": "61000.00",
+  "tax_lines": [
+    {
+      "type": "CGST",
+      "rate": "9",
+      "amount": "5490.00"
+    },
+    {
+      "type": "SGST",
+      "rate": "9",
+      "amount": "5490.00"
+    }
+  ],
+  "tax_total": "10980.00",
+  "other_charges": "0.00",
+  "total": "71980.00",
+  "prices_tax_inclusive": false,
+  "field_confidence": {
+    "vendor_name": 0.99,
+    "vendor_gstin": 0.99,
+    "invoice_number": 0.99,
+    "invoice_date": 0.99,
+    "due_date": 0.99,
+    "po_number": 0.99,
+    "subtotal": 0.99,
+    "tax_total": 0.99,
+    "total": 0.99,
+    "line_items": 0.99,
+    "vendor_bank": 0.99
+  },
+  "notes": null
+}

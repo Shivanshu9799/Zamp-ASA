@@ -1,0 +1,61 @@
+{
+  "vendor_name": "Shree Ganesh Industrial Supplies Pvt. Ltd.",
+  "vendor_gstin": "27AABCS1234F1Z5",
+  "vendor_address": "Gat No. 212, Bhosari MIDC, Pune - 411026, Maharashtra",
+  "vendor_bank": {
+    "bank_name": "HDFC Bank",
+    "account_number": "50100234564521",
+    "ifsc": "HDFC0000123"
+  },
+  "bill_to_name": "Meridian Foods Pvt. Ltd.",
+  "invoice_number": "INV-SGI-0392",
+  "invoice_date": "2026-09-15",
+  "due_date": "2026-10-15",
+  "payment_terms": "Net 30 days",
+  "po_number": "PO-2026-0905",
+  "po_reference_text": null,
+  "currency": "INR",
+  "line_items": [
+    {
+      "description": "Hex bolt M12x60 zinc plated",
+      "sku": null,
+      "hsn": "7318",
+      "quantity": "500",
+      "uom": "NOS",
+      "unit_price": "24.00",
+      "amount": "12000.00",
+      "tax_rate": "18"
+    }
+  ],
+  "subtotal": "12000.00",
+  "tax_lines": [
+    {
+      "type": "CGST",
+      "rate": "9",
+      "amount": "1080.00"
+    },
+    {
+      "type": "SGST",
+      "rate": "9",
+      "amount": "1080.00"
+    }
+  ],
+  "tax_total": "2160.00",
+  "other_charges": "0.00",
+  "total": "14160.00",
+  "prices_tax_inclusive": false,
+  "field_confidence": {
+    "vendor_name": 0.99,
+    "vendor_gstin": 0.99,
+    "invoice_number": 0.99,
+    "invoice_date": 0.99,
+    "due_date": 0.99,
+    "po_number": 0.99,
+    "subtotal": 0.99,
+    "tax_total": 0.99,
+    "total": 0.99,
+    "line_items": 0.99,
+    "vendor_bank": 0.99
+  },
+  "notes": null
+}

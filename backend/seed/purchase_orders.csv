@@ -1,0 +1,11 @@
+po_id,vendor_id,type,date,currency,amount,note
+PO-2026-1001,V001,goods,2026-10-05,INR,61000.00,
+PO-2026-1002,V004,goods,2026-10-08,INR,60000.00,
+PO-2026-1003,V003,goods,2026-10-02,INR,36000.00,
+PO-2026-1004,V002,service,2026-10-01,INR,85000.00,
+PO-2026-1005,V005,service,2026-10-20,INR,28000.00,
+PO-2026-1007,V003,goods,2026-10-15,INR,47500.00,
+PO-2026-1009,V005,service,2026-10-25,INR,36000.00,Decoy: same amount as PO-2026-1003 but a different vendor
+PO-2026-0905,V001,goods,2026-09-05,INR,12000.00,Historical PO (September) used by seeded history
+PO-2026-0911,V002,service,2026-08-28,INR,78500.00,Historical PO (September) used by seeded history
+PO-2026-0918,V004,goods,2026-09-18,INR,34500.00,Historical PO (September) used by seeded history

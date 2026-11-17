@@ -1,0 +1,61 @@
+{
+  "vendor_name": "Orbit Logistics",
+  "vendor_gstin": "27AAJFO7890Q1Z4",
+  "vendor_address": "Godown 5, JNPT Road, Panvel, Navi Mumbai - 410206, Maharashtra",
+  "vendor_bank": {
+    "bank_name": "Kotak Mahindra Bank",
+    "account_number": "7712009910",
+    "ifsc": "KKBK0000555"
+  },
+  "bill_to_name": "Meridian Foods Pvt. Ltd.",
+  "invoice_number": "ORB-7782",
+  "invoice_date": "2026-11-05",
+  "due_date": "2026-11-20",
+  "payment_terms": "15 days",
+  "po_number": "PO-2026-1005",
+  "po_reference_text": null,
+  "currency": "INR",
+  "line_items": [
+    {
+      "description": "FTL freight Mumbai to Pune (32 ft)",
+      "sku": null,
+      "hsn": "996511",
+      "quantity": "1",
+      "uom": "TRIP",
+      "unit_price": "28000.00",
+      "amount": "28000.00",
+      "tax_rate": "5"
+    }
+  ],
+  "subtotal": "28000.00",
+  "tax_lines": [
+    {
+      "type": "CGST",
+      "rate": "2.5",
+      "amount": "700.00"
+    },
+    {
+      "type": "SGST",
+      "rate": "2.5",
+      "amount": "700.00"
+    }
+  ],
+  "tax_total": "1400.00",
+  "other_charges": "0.00",
+  "total": "29400.00",
+  "prices_tax_inclusive": false,
+  "field_confidence": {
+    "vendor_name": 0.99,
+    "vendor_gstin": 0.99,
+    "invoice_number": 0.99,
+    "invoice_date": 0.99,
+    "due_date": 0.99,
+    "po_number": 0.99,
+    "subtotal": 0.99,
+    "tax_total": 0.99,
+    "total": 0.99,
+    "line_items": 0.99,
+    "vendor_bank": 0.99
+  },
+  "notes": "Please note our new bank details"
+}

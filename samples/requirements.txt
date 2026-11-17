@@ -1,0 +1,5 @@
+# only needed to regenerate the sample PDFs:  pip install -r samples/requirements.txt && python samples/make_invoices.py
+reportlab==4.2.5
+pillow>=10.4.0
+pypdfium2>=4.30.0
+numpy>=1.26
