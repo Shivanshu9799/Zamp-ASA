@@ -7,7 +7,7 @@ import { Button, Card, cx, RuleTag, StatusPill } from './ui'
 const RULE_NAME: Record<string, string> = {
   R01: 'Missing fields', R02: 'Low-confidence reading', R03: 'Arithmetic', R04: 'GST structure', R05: 'Vendor', R06: 'Bank details',
   R07: 'Exact duplicate', R08: 'Probable duplicate', R09: 'PO not found', R10: 'No PO', R11: 'Unit price', R12: 'Goods received',
-  R13: 'PO value', R14: 'Currency', R15: 'Total', SYS: 'Processing error',
+  R13: 'PO value', R14: 'Currency', R15: 'Total', R16: 'Addressee', SYS: 'Processing error',
 }
 
 export function DecisionCard({ run, currentStage, onApprove, onReject, onRerun }: { run: RunDetail; currentStage?: string; onApprove: () => void; onReject: () => void; onRerun: () => void }) {

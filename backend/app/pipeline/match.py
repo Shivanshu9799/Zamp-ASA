@@ -203,13 +203,20 @@ def map_lines(ex: ExtractedInvoice, plines: list[POLine]) -> list[tuple[int, Opt
             pairs.append((s, i, p))
     pairs.sort(key=lambda t: -t[0])
     used_i, used_p, out = set(), set(), {}
-    for s, i, p in pairs:
+    for s, i, p in pairs:                       # pass 1: best-first, one-to-one
         if s < 0.6 or i in used_i or p.line_no in used_p:
             continue
         used_i.add(i)
         used_p.add(p.line_no)
         out[i] = (p, s)
+    for s, i, p in pairs:                       # pass 2: a vendor may bill one PO item on several invoice lines
+        if i not in used_i and s >= SPLIT_LINE_MATCH:   # (e.g. two lots); only on a near-certain match
+            used_i.add(i)
+            out[i] = (p, s)
     return [(i, *(out[i] if i in out else (None, 0.0))) for i in range(len(ex.line_items))]
+
+
+SPLIT_LINE_MATCH = 0.85
 
 
 # ======================================================================= PO inference (R10)
@@ -432,21 +439,29 @@ def run_po_match(db: Session, ex: ExtractedInvoice, vendor: Optional[Vendor], ru
             else:
                 row["price_ok"] = False
                 price_issues.append(f"'{l.description}': no unit price to compare")
+            prev = h["qty"].get(p.line_no, ZERO)
             if goods:
                 recvd = recv.get(p.line_no, ZERO)
-                prev = h["qty"].get(p.line_no, ZERO)
-                open_q = recvd - prev
-                row.update(received_qty=recvd, previously_invoiced_qty=prev, open_qty=open_q)
-                if l.quantity is not None:
-                    row["qty_delta"] = l.quantity - open_q
-                    row["qty_ok"] = l.quantity <= open_q + config.QTY_TOLERANCE
-                else:
-                    row["qty_ok"] = False
+                row.update(received_qty=recvd, previously_invoiced_qty=prev, open_qty=recvd - prev)
             else:
-                prev = h["qty"].get(p.line_no, ZERO)
                 row.update(previously_invoiced_qty=prev, open_qty=to_dec(p.qty, ZERO) - prev)
-                row["qty_ok"] = True if l.quantity is None else (l.quantity <= to_dec(p.qty, ZERO) - prev + config.QTY_TOLERANCE)
         rows.append(row)
+    # Quantity check per PO line over the SUM of this invoice's lines on it: a vendor may bill one PO item on
+    # several invoice lines (two lots), and each line alone would look fine against the open quantity.
+    billed: dict[int, Decimal] = {}
+    for r in rows:
+        if r["po_line_no"] is not None and r["this_qty"] is not None:
+            billed[r["po_line_no"]] = billed.get(r["po_line_no"], ZERO) + r["this_qty"]
+    for r in rows:
+        if r["po_line_no"] is None:
+            continue
+        if r["this_qty"] is None:
+            r["qty_ok"] = False if goods else True    # services are often a lump sum with no quantity printed
+            continue
+        total = billed[r["po_line_no"]]
+        r["po_line_billed_qty"] = total
+        r["qty_delta"] = total - r["open_qty"]
+        r["qty_ok"] = total <= r["open_qty"] + config.QTY_TOLERANCE
     res.line_matches = rows
 
     if unmatched or price_issues:
@@ -470,7 +485,8 @@ def run_po_match(db: Session, ex: ExtractedInvoice, vendor: Optional[Vendor], ru
             msgs = []
             for r in over:
                 d = r["qty_delta"]
-                msgs.append(f"'{r['description']}': invoice bills {fmt_qty(r['this_qty'])} but only "
+                msgs.append(f"'{r['description']}': invoice bills {fmt_qty(r.get('po_line_billed_qty') or r['this_qty'])} "
+                            f"{'in total ' if (r.get('po_line_billed_qty') or r['this_qty']) != r['this_qty'] else ''}but only "
                             f"{fmt_qty(r['open_qty'])} are received and not yet billed "
                             f"({fmt_qty(r['received_qty'])} received − {fmt_qty(r['previously_invoiced_qty'])} already "
                             f"billed)" + (f" → {fmt_qty(d)} unit(s) over" if d is not None else ""))

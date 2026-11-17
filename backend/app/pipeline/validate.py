@@ -78,14 +78,28 @@ def check_math(ex: ExtractedInvoice) -> CheckResult:
     else:
         if ex.subtotal is not None and all_amounts and abs(sum_lines - ex.subtotal) > TOL:
             issues.append(f"lines add up to {fmt_inr(sum_lines)} but the subtotal says {fmt_inr(ex.subtotal)}")
-        if ex.subtotal is not None and ex.tax_total is not None and ex.total is not None:
-            expected_total = ex.subtotal + ex.tax_total + other
+        # The total is ALWAYS reconciled, even when the subtotal or tax total could not be read:
+        # fall back to the sum of the lines, and to the sum of the tax lines.
+        tax = ex.tax_total
+        if tax is None and ex.tax_lines and all(t.amount is not None for t in ex.tax_lines):
+            tax = sum((t.amount for t in ex.tax_lines), ZERO)
+        base_total = ex.subtotal if ex.subtotal is not None else (sum_lines if all_amounts else None)
+        if ex.total is not None and base_total is not None:
+            if tax is None:
+                tax = ZERO
+                ev["note"] = "No tax amount could be read; assumed none when reconciling the total"
+            elif ex.subtotal is None or ex.tax_total is None:
+                ev["note"] = "Subtotal or tax total missing; reconciled using the lines and tax lines instead"
+            expected_total = base_total + tax + other
             ev["expected_total"] = expected_total
             if abs(expected_total - ex.total) > TOL:
-                issues.append(f"subtotal {fmt_inr(ex.subtotal)} + tax {fmt_inr(ex.tax_total)} = "
-                              f"{fmt_inr(expected_total)}, but the invoice total is {fmt_inr(ex.total)}")
-        elif ex.total is not None and ex.subtotal is None and all_amounts:
-            ev["note"] = "No subtotal printed; compared lines with total only"
+                issues.append(f"{'subtotal' if ex.subtotal is not None else 'lines'} {fmt_inr(base_total)} + tax "
+                              f"{fmt_inr(tax)} = {fmt_inr(expected_total)}, but the invoice total is {fmt_inr(ex.total)}")
+        elif ex.total is not None:
+            issues.append("neither a subtotal nor every line amount could be read, so the total cannot be verified")
+    unverifiable = [r["line"] for r in ev["lines"] if r["amount"] is not None and "expected_amount" not in r]
+    if unverifiable:
+        ev["lines_without_qty_or_price"] = unverifiable  # cannot check qty × price; totals above still must reconcile
     ev.update(subtotal=ex.subtotal, tax_total=ex.tax_total, other_charges=other, total=ex.total,
               rounding_tolerance=TOL)
     if issues:
@@ -99,9 +113,13 @@ def check_gst(ex: ExtractedInvoice) -> CheckResult:
     types = [t.type for t in ex.tax_lines]
     ev: dict = {"tax_lines": [{"type": t.type, "rate": t.rate, "amount": t.amount} for t in ex.tax_lines]}
     issues: list[str] = []
-    base = ex.subtotal
+    from .match import net_amount  # taxable value even when no subtotal was printed / read
+    base = ex.subtotal if ex.subtotal is not None else (net_amount(ex) if ex.line_items else None)
+    line_rates = {l.tax_rate for l in ex.line_items if l.tax_rate is not None}
+    multi_rate = len(line_rates) > 1
     vendor_state = ex.vendor_gstin[:2] if ex.vendor_gstin and len(ex.vendor_gstin) >= 2 else None
-    ev.update(vendor_state=vendor_state, buyer_state=config.BUYER_STATE_CODE, taxable_value=base)
+    ev.update(vendor_state=vendor_state, buyer_state=config.BUYER_STATE_CODE, taxable_value=base,
+              multi_rate=multi_rate)
 
     if not ex.tax_lines:
         if ex.tax_total and ex.tax_total > 0:
@@ -115,11 +133,31 @@ def check_gst(ex: ExtractedInvoice) -> CheckResult:
     if has_c != has_s:
         issues.append("CGST and SGST must come as a pair")
     if has_c and has_s:
-        c = next(t for t in ex.tax_lines if t.type == "CGST")
-        s = next(t for t in ex.tax_lines if t.type == "SGST")
-        if c.rate != s.rate or (c.amount is not None and s.amount is not None and abs(c.amount - s.amount) > Decimal("0.02")):
-            issues.append(f"CGST ({fmt_inr(c.amount)} @ {c.rate}%) and SGST ({fmt_inr(s.amount)} @ {s.rate}%) differ")
-    if base is not None:
+        # sum over every slab: an invoice with 2 GST slabs prints 2 CGST and 2 SGST lines
+        cg = [t for t in ex.tax_lines if t.type == "CGST"]
+        sg = [t for t in ex.tax_lines if t.type == "SGST"]
+        c_sum = sum((t.amount for t in cg if t.amount is not None), ZERO)
+        s_sum = sum((t.amount for t in sg if t.amount is not None), ZERO)
+        ev.update(cgst_total=c_sum, sgst_total=s_sum)
+        if sorted(t.rate for t in cg if t.rate is not None) != sorted(t.rate for t in sg if t.rate is not None) \
+                or abs(c_sum - s_sum) > Decimal("0.02") * max(len(cg), len(sg)):
+            issues.append(f"CGST ({fmt_inr(c_sum)}) and SGST ({fmt_inr(s_sum)}) differ")
+    if multi_rate:
+        # several GST slabs: a single "rate x whole subtotal" is meaningless, so compare the TOTAL tax with the
+        # sum of (line taxable value x that line's rate)
+        if any(l.tax_rate is None or l.amount is None for l in ex.line_items):
+            ev["note"] = "Several GST rates but not every line states its rate; tax amount not re-computed"
+        else:
+            expected_tax = ZERO
+            for l in ex.line_items:
+                line_base = q2(l.amount / (1 + l.tax_rate / 100)) if ex.prices_tax_inclusive else l.amount
+                expected_tax += q2(line_base * l.tax_rate / 100)
+            actual = sum((t.amount for t in ex.tax_lines if t.amount is not None), ZERO)
+            ev.update(expected_total_tax=expected_tax, actual_total_tax=actual)
+            if abs(expected_tax - actual) > TOL * max(1, len(ex.line_items)):
+                issues.append(f"with line rates {sorted(str(r) for r in line_rates)} the GST should total "
+                              f"{fmt_inr(expected_tax)}, but the invoice shows {fmt_inr(actual)}")
+    elif base is not None:
         for t in ex.tax_lines:
             if t.rate is not None and t.amount is not None:
                 expected = q2(base * t.rate / 100)
@@ -141,10 +179,28 @@ def check_gst(ex: ExtractedInvoice) -> CheckResult:
                 f"GST is structured correctly as {kind}; tax equals rate × taxable value.", ev)
 
 
+def check_bill_to(ex: ExtractedInvoice) -> CheckResult:
+    """R16: the invoice must be addressed to the buyer entity (a PO number alone does not prove that)."""
+    from rapidfuzz import fuzz
+    from .match import clean_name
+    if not ex.bill_to_name:
+        return _chk("R16", "Invoice is addressed to the buyer", "warn", "info",
+                    "No bill-to name could be read from the invoice, so the addressee was not verified.",
+                    {"bill_to": None, "buyer": config.BUYER_NAME})
+    score = round(fuzz.token_sort_ratio(clean_name(ex.bill_to_name), clean_name(config.BUYER_NAME)), 1)
+    ev = {"bill_to": ex.bill_to_name, "buyer": config.BUYER_NAME, "similarity": score, "threshold": 80}
+    if score < 80:
+        return _chk("R16", "Invoice is addressed to the buyer", "fail", "pending",
+                    f"The invoice is addressed to '{ex.bill_to_name}', not {config.BUYER_NAME}. It may belong to a "
+                    "different entity, so a person must confirm before it is paid.", ev)
+    return _chk("R16", "Invoice is addressed to the buyer", "pass", "pending",
+                f"The invoice is addressed to {ex.bill_to_name}.", ev)
+
+
 def run_validate(ex: ExtractedInvoice) -> list[CheckResult]:
     out = [check_required(ex)]
     r15 = check_total_positive(ex)
-    out += [check_math(ex), check_gst(ex)]
+    out += [check_math(ex), check_gst(ex), check_bill_to(ex)]
     if r15:
         out.append(r15)
     return out

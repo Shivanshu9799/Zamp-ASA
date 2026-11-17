@@ -174,7 +174,8 @@ def crosscheck(pdf_bytes: bytes, ex: ExtractedInvoice, has_text: bool) -> dict:
                 "note": "Scanned PDF: no text layer to cross-check against."}
     text = pdf_text(pdf_bytes)
     alnum = re.sub(r"[^A-Z0-9]", "", text.upper())
-    amounts = {str(parse_amount(m)) for m in re.findall(r"\d[\d,]*\.\d{2}", text)}
+    # every number in the text as a Decimal, so "61,000", "61,000.00" and "Rs. 61,000/-" all equal 61000
+    amounts = {a for a in (parse_amount(m) for m in re.findall(r"\d[\d,]*(?:\.\d+)?", text)) if a is not None}
     fields: dict = {}
 
     def add(name, llm_value, found):
@@ -183,9 +184,9 @@ def crosscheck(pdf_bytes: bytes, ex: ExtractedInvoice, has_text: bool) -> dict:
     if ex.invoice_number:
         add("invoice_number", ex.invoice_number, re.sub(r"[^A-Z0-9]", "", ex.invoice_number.upper()) in alnum)
     if ex.total is not None:
-        add("total", ex.total, str(ex.total.quantize(to_dec("0.01"))) in amounts)
+        add("total", ex.total, ex.total in amounts)
     if ex.subtotal is not None:
-        add("subtotal", ex.subtotal, str(ex.subtotal.quantize(to_dec("0.01"))) in amounts)
+        add("subtotal", ex.subtotal, ex.subtotal in amounts)
     if ex.vendor_gstin:
         add("vendor_gstin", ex.vendor_gstin, ex.vendor_gstin in alnum)
     return {"available": True, "agreed": all(f["found_in_text"] for f in fields.values()) if fields else None,
@@ -243,12 +244,15 @@ def run_extract(pdf_bytes: bytes, sha: str, has_text: bool, filename: str = "") 
 
 # ---------------------------------------------------------------- rule R02
 def check_extraction(ex: ExtractedInvoice, info: dict) -> list[CheckResult]:
-    conf = {f: ex.field_confidence.get(f) for f in config.CRITICAL_FIELDS}
-    low = [f for f, c in conf.items() if c is not None and c < config.EXTRACTION_MIN_CONFIDENCE]
+    # a critical field with NO reported confidence is treated as low (0.5), never as a silent pass
+    conf = {f: ex.field_confidence.get(f, 0.5) for f in config.CRITICAL_FIELDS}
+    unreported = [f for f in config.CRITICAL_FIELDS if f not in ex.field_confidence]
+    low = [f for f, c in conf.items() if c < config.EXTRACTION_MIN_CONFIDENCE]
     cc = info.get("crosscheck", {})
     disagreed = [n for n, f in cc.get("fields", {}).items() if not f["found_in_text"]]
     evidence = {"confidence": conf, "threshold": config.EXTRACTION_MIN_CONFIDENCE, "crosscheck": cc,
-                "low_confidence_fields": low, "cross_check_mismatches": disagreed}
+                "low_confidence_fields": low, "confidence_not_reported": unreported,
+                "cross_check_mismatches": disagreed}
     if low or disagreed:
         bits = []
         if low:

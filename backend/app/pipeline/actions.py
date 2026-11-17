@@ -94,7 +94,7 @@ def draft_next_action(decision: Decision, checks: list[CheckResult], ex: Extract
             for ln in r12.evidence.get("lines", []):
                 if ln.get("qty_ok") is False and ln.get("open_qty") is not None:
                     allowed = ln["open_qty"]
-                    pts.append(f"It bills {fmt_qty(ln['this_qty'])} × {ln['description']}, but only {fmt_qty(allowed)} "
+                    pts.append(f"It bills {fmt_qty(ln.get('po_line_billed_qty') or ln['this_qty'])} × {ln['description']}, but only {fmt_qty(allowed)} "
                                f"remain unbilled against goods received ({fmt_qty(ln['received_qty'])} received, "
                                f"{fmt_qty(ln['previously_invoiced_qty'])} already invoiced).")
                     over = ln["qty_delta"]

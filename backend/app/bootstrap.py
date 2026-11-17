@@ -19,8 +19,9 @@ def init_db(seed_if_empty: bool = True) -> None:
 
 def reset_demo() -> None:
     """Wipe all runs, reload master data and re-process the seeded history."""
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    with SessionLocal() as db:
-        load_master_data(db)
-        runner.seed_history(db)
+    with runner.exclusive():      # waits for in-flight runs; new runs wait until the reset is done
+        Base.metadata.drop_all(engine)
+        Base.metadata.create_all(engine)
+        with SessionLocal() as db:
+            load_master_data(db)
+            runner.seed_history(db)

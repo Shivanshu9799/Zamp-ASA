@@ -43,7 +43,7 @@ RULE_LABELS = {
     "R04": "GST structure", "R05": "Unknown/unclear vendor", "R06": "Bank details changed",
     "R07": "Duplicate invoice", "R08": "Probable duplicate", "R09": "PO not found",
     "R10": "No PO – needs confirmation", "R11": "Price mismatch", "R12": "Billed > received",
-    "R13": "Exceeds PO value", "R14": "Currency mismatch", "R15": "Non-positive total", "SYS": "Processing error",
+    "R13": "Exceeds PO value", "R14": "Currency mismatch", "R15": "Non-positive total", "R16": "Addressed to someone else", "SYS": "Processing error",
 }
 
 

@@ -32,5 +32,15 @@ Where the brief was silent or ambiguous I picked the sensible option and wrote i
 21. Explanations are template-generated unless a key is configured (they are then cached under `llm_cache/explain_*.json`); LLM text is accepted only if every number in it already appears in the check results.
 22. The pipeline treats the model's confidence as advisory: it is lowered to 0.5 automatically for any field the PDF text layer contradicts.
 
+## Hardening after an external review
+25. **R16 (addressee) was added** beyond the original 15 rules: a valid PO number is not proof that the invoice is addressed to Meridian Foods, so a bill-to name that is < 80 % similar goes to Pending. A missing bill-to name is a note, not a failure (scans).
+26. **R03 always reconciles the total.** If the subtotal or tax total could not be read, the lines and tax lines are used instead; if neither is possible the check fails closed. A line without quantity or unit price cannot have qty × price verified (recorded in the evidence), but the totals must still add up.
+27. **R04 with several GST slabs** compares the *total* tax with Σ (line taxable value × line rate) and sums CGST/SGST across slabs; with no subtotal printed it falls back to the sum of the lines.
+28. **R02:** a critical field for which the reader reported no confidence counts as 0.5 (low), not as a pass. The text-layer cross-check compares numbers as Decimals, so `61,000`, `61,000.00` and `Rs. 61,000/-` all match.
+29. **One PO line can be billed on several invoice lines** (e.g. two lots). A second line maps to the same PO line only on a ≥ 85 % description match, and R12 compares the *sum* of those lines with the open quantity.
+30. **Concurrency:** stages 5–8 run under one process-wide lock (see README). The demo reset waits for in-flight runs.
+31. **Not changed, by design:** (a) when R05 fails but a vendor is suggested (borderline name, GSTIN mismatch) the suggested vendor is still used for the later stages so the reviewer sees its bank, duplicate and PO findings — the run is Pending regardless because R05 failed, and *Confirm PO* does not clear that; (b) overriding or rejecting an invoice does not automatically re-evaluate other invoices already decided — balances are as of the moment each invoice was processed, and *Re-run* refreshes one; (c) a human who approves an over-billed or duplicate invoice makes it count towards the PO balance, which is recorded in the audit log.
+32. **Model id:** `gemini-3.5-flash-lite` is a real, working model for the key used here (it appears in AI Studio's rate-limit page and all 11 sample extractions were produced with it). It is configurable via `LLM_MODEL`.
+
 ## Not built (on purpose)
 GL coding, approval matrices, payment runs, FX, credit notes, email intake, ERP integration, real user accounts. They are listed as next steps in the README.

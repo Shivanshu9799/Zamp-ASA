@@ -22,6 +22,7 @@ OK_PHRASE = {
     "R08": "it does not look like a duplicate", "R09": "the PO is valid for this vendor",
     "R11": "unit prices match the PO", "R12": "quantities are covered by goods receipts",
     "R13": "billing stays within the PO value", "R14": "the currency matches the PO",
+    "R16": "it is addressed to the right company",
 }
 
 

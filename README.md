@@ -5,7 +5,7 @@ A working invoice-processing agent for accounts payable. Drop in a vendor invoic
 > **AI reads and explains. Code decides.**
 > A language model turns messy PDFs into structured fields and, afterwards, words the explanation. Every validation, calculation, match, tolerance and the final decision is plain, deterministic Python with rule IDs. The model never decides and never does money arithmetic. *Approve* is a **recommendation to post for payment** — the system never releases money.
 
-![stages](https://img.shields.io/badge/stages-8-4338ca) ![rules](https://img.shields.io/badge/rules-15-4338ca) ![tests](https://img.shields.io/badge/pytest-53_passing-10b981)
+![stages](https://img.shields.io/badge/stages-8-4338ca) ![rules](https://img.shields.io/badge/rules-16-4338ca) ![tests](https://img.shields.io/badge/pytest-69_passing-10b981)
 
 ---
 
@@ -66,6 +66,7 @@ flowchart LR
 
 * Every stage writes a row (`running → passed | warning | failed`, duration, summary, check results) the moment it starts and finishes. The SSE endpoint replays those rows and follows new ones, so the live view also works if you open a finished run, refresh mid-run, or run behind a proxy.
 * The pipeline never crashes a run: an exception in a stage marks it `failed`, adds a `SYS` check, and the run lands in **Pending** with *"Processing error at stage X: …"*.
+* Stages 5–8 (duplicate check → PO balance → decision → final status) run one invoice at a time behind a process-wide lock, so two invoices uploaded at once cannot both be approved against the same PO or as duplicates of each other; stages 1–4 stay parallel. *Reset demo* waits for running pipelines before it touches the tables. (Single worker process; with several workers use a database advisory lock.)
 * Money is `Decimal` end to end and stored as strings; there is no float arithmetic on amounts.
 
 ## The eight stages
@@ -99,6 +100,7 @@ flowchart LR
 | R13 | Approved-to-date + this invoice ≤ PO value | Pending |
 | R14 | Currency matches PO | Pending |
 | R15 | Total > 0 | **Reject** |
+| R16 | Invoice is addressed to the buyer (bill-to name ≈ Meridian Foods Pvt. Ltd., ≥ 80 %) | Pending |
 
 **Precedence:** any reject rule → Reject. Else any security hold → Pending (security). Else any pending rule → Pending. Else Approve. Tolerances are in [`backend/app/config.py`](backend/app/config.py) and shown on the **Master data → Rules** page.
 
@@ -132,7 +134,7 @@ GET  /api/master/{vendors|pos|grns}   GET /api/samples   GET /api/config   POST 
 ## Tests
 
 ```bash
-cd backend && pytest -q        # 53 tests, offline, deterministic (LLM_MODE=cached, no network)
+cd backend && pytest -q        # 69 tests, offline, deterministic (LLM_MODE=cached, no network)
 python scripts_run_samples.py  # runs all 8 scenarios in demo order and prints decision vs expectation
 ```
 One test per scenario (decision **and** the rule IDs that fired), plus unit tests for invoice-number normalisation, fuzzy duplicates, PO-inference scoring, GST validation, Decimal rounding, the precedence engine (synthetic checks, no PDFs) and a guard-rail that every number in an explanation or draft email traces back to a check result.

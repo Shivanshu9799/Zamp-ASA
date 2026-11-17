@@ -93,6 +93,8 @@ RULES = [
      "plain": "Invoice currency must equal the PO currency."},
     {"id": "R15", "stage": "validate", "name": "Total is positive", "on_fail": "REJECT",
      "plain": "Zero or negative totals are rejected (credit notes are out of scope)."},
+    {"id": "R16", "stage": "validate", "name": "Invoice is addressed to the buyer", "on_fail": "PENDING",
+     "plain": "The bill-to name must match Meridian Foods Pvt. Ltd. (≥ 80%): a valid PO number is not proof of addressee."},
 ]
 
 STAGES = [

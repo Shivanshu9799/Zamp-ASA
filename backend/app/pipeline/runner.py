@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import threading
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Callable, Optional
@@ -208,9 +209,52 @@ def _load_ctx(db: Session, run: Run, pdf: bytes, start_idx: int, po_override: Op
     return ctx
 
 
+# ---- concurrency -------------------------------------------------------------------------------------------
+# Stages 5-8 (duplicate check -> PO balance -> decision -> final status) read what earlier runs decided, so two
+# runs overlapping there could both pass R07/R08/R12/R13 and over-approve a PO. They are therefore serialised by a
+# process-wide lock held until the final status is committed. (One worker process; with several workers use a
+# database advisory lock instead.) Stages 1-4 stay parallel.
+PIPELINE_LOCK = threading.RLock()
+CRITICAL_FROM = config.STAGE_KEYS.index("duplicate")
+_STATE = threading.Condition()
+_active = 0
+_resetting = False
+
+
+@contextmanager
+def exclusive():
+    """Block new runs and wait for running ones to finish (used by the demo reset, which drops the tables)."""
+    global _resetting
+    with _STATE:
+        _resetting = True
+        _STATE.wait_for(lambda: _active == 0, timeout=90)
+    try:
+        yield
+    finally:
+        with _STATE:
+            _resetting = False
+            _STATE.notify_all()
+
+
 def process_run(run_id: int, start_stage: str = "intake", po_override: Optional[str] = None) -> None:
+    """Public entry point: registers the run as active (so a reset waits for it), then runs the pipeline."""
+    global _active
+    with _STATE:
+        while _resetting:
+            _STATE.wait(0.5)
+        _active += 1
+    try:
+        _process_run_inner(run_id, start_stage, po_override)
+    finally:
+        with _STATE:
+            _active -= 1
+            _STATE.notify_all()
+
+
+def _process_run_inner(run_id: int, start_stage: str = "intake", po_override: Optional[str] = None) -> None:
     """Runs (or re-runs from `start_stage`) the pipeline for one run. Safe to call from a thread."""
     db = SessionLocal()
+    holding = False
     try:
         run = db.get(Run, run_id)
         pdf = db.get(RunFile, run_id).content
@@ -230,6 +274,10 @@ def process_run(run_id: int, start_stage: str = "intake", po_override: Optional[
         for idx, (key, fn) in enumerate(STAGE_FUNCS):
             if idx < start_idx:
                 continue
+            if idx >= CRITICAL_FROM and not holding:
+                PIPELINE_LOCK.acquire()
+                holding = True
+                db.rollback()  # drop any open transaction so the queries below see what earlier runs committed
             started = utcnow()
             _upsert_stage(db, run_id, idx, key, status="running", started_at=started, finished_at=None,
                           duration_ms=None, summary="", details={})
@@ -282,6 +330,8 @@ def process_run(run_id: int, start_stage: str = "intake", po_override: Optional[
             db.commit()
     finally:
         db.close()
+        if holding:
+            PIPELINE_LOCK.release()
 
 
 def start_background(run_id: int, start_stage: str = "intake", po_override: Optional[str] = None) -> threading.Thread:
@@ -302,7 +352,7 @@ def seed_history(db: Session) -> None:
             p = config.SAMPLES_DIR / h["file"]
             created = utcnow() - timedelta(days=h["days_ago"], hours=1)
             run = create_run(db, p.name, p.read_bytes(), source="seed", created_at=created)
-            process_run(run.id)
+            _process_run_inner(run.id)      # (not process_run: the demo reset holds `exclusive()` while seeding)
             r = db.get(Run, run.id)
             db.refresh(r)
             r.created_at = created
